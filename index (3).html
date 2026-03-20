@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เครื่องคำนวณฟิสิกส์ ม.4–6</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0e1a; --panel:#111827; --card:#1a2235; --border:#2a3a5c;
+  --c1:#00d4ff; --c2:#7c3aed; --c3:#10b981; --c4:#f59e0b; --c5:#ef4444;
+  --c6:#ec4899; --c7:#06b6d4; --c8:#84cc16; --c9:#f97316; --c10:#a78bfa;
+  --text:#e2e8f0; --muted:#64748b;
+  --g1:rgba(0,212,255,0.15); --g2:rgba(124,58,237,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Kanit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.container{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 16px;}
+
+header{text-align:center;margin-bottom:32px;padding:28px 24px;background:linear-gradient(135deg,rgba(0,212,255,0.08),rgba(124,58,237,0.08));border:1px solid var(--border);border-radius:16px;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 0%,rgba(0,212,255,0.04) 25%,transparent 50%);animation:spin 20s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+header h1{font-size:2.2rem;font-weight:700;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;z-index:1;letter-spacing:2px;}
+header p{color:var(--muted);font-size:0.9rem;margin-top:8px;position:relative;z-index:1;}
+
+/* LEVEL TABS */
+.level-tabs{display:flex;gap:10px;margin-bottom:16px;justify-content:center;}
+.level-btn{padding:10px 28px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-family:'Kanit',sans-serif;font-size:0.95rem;font-weight:600;transition:all 0.25s;}
+.level-btn.active{background:linear-gradient(135deg,var(--g1),var(--g2));border-color:var(--c1);color:var(--c1);box-shadow:0 0 16px var(--g1);}
+
+/* TOPIC TABS */
+.tabs{display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap;justify-content:center;}
+.tab-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-family:'Kanit',sans-serif;font-size:0.82rem;font-weight:400;transition:all 0.2s;white-space:nowrap;}
+.tab-btn:hover{border-color:var(--c1);color:var(--c1);}
+.tab-btn.active{border-color:var(--c1);color:var(--c1);background:rgba(0,212,255,0.08);box-shadow:0 0 10px rgba(0,212,255,0.15);}
+
+.level-section{display:none;}
+.level-section.active{display:block;animation:fadeIn 0.3s ease;}
+.panel{display:none;}
+.panel.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.calc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px;margin-bottom:18px;}
+.calc-card h2{font-size:1.15rem;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.badge{font-size:0.68rem;padding:2px 10px;border-radius:20px;font-weight:400;}
+.calc-card p.desc{color:var(--muted);font-size:0.84rem;margin-bottom:18px;line-height:1.75;}
+.formula-box{background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-family:'Share Tech Mono',monospace;font-size:0.88rem;color:var(--c1);line-height:1.9;}
+
+.input-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px;}
+.input-group{display:flex;flex-direction:column;gap:5px;}
+.input-group label{font-size:0.8rem;color:var(--muted);}
+.input-group input,.input-group select{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:0.92rem;transition:border-color 0.2s;outline:none;width:100%;}
+.input-group input:focus,.input-group select:focus{border-color:var(--c1);box-shadow:0 0 0 3px var(--g1);}
+.input-group select option{background:var(--panel);}
+
+.calc-btn{padding:11px 28px;background:linear-gradient(135deg,var(--c1),var(--c2));border:none;border-radius:10px;color:white;font-family:'Kanit',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.25s;letter-spacing:0.5px;}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,212,255,0.3);}
+.calc-btn:active{transform:translateY(0);}
+
+.result-box{margin-top:16px;background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(124,58,237,0.07));border:1px solid rgba(0,212,255,0.25);border-radius:12px;padding:16px 18px;display:none;}
+.result-box.show{display:block;animation:fadeIn 0.3s;}
+.result-box h3{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;}
+.result-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
+.result-item:last-child{border-bottom:none;}
+.result-item .label{font-size:0.85rem;color:var(--muted);}
+.result-item .value{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--c1);font-weight:600;}
+.error-msg{color:var(--c5);font-size:0.83rem;margin-top:8px;display:none;}
+.sep{height:1px;background:var(--border);margin:18px 0;}
+
+/* color utils */
+.t1{color:var(--c1);} .t2{color:var(--c2);} .t3{color:var(--c3);} .t4{color:var(--c4);} .t5{color:var(--c5);}
+.t6{color:var(--c6);} .t7{color:var(--c7);} .t8{color:var(--c8);} .t9{color:var(--c9);} .t10{color:var(--c10);}
+.b1{background:rgba(0,212,255,0.1);color:var(--c1);}
+.b2{background:rgba(124,58,237,0.1);color:var(--c2);}
+.b3{background:rgba(16,185,129,0.1);color:var(--c3);}
+.b4{background:rgba(245,158,11,0.1);color:var(--c4);}
+.b5{background:rgba(239,68,68,0.1);color:var(--c5);}
+.b6{background:rgba(236,72,153,0.1);color:var(--c6);}
+.b7{background:rgba(6,182,212,0.1);color:var(--c7);}
+.b8{background:rgba(132,204,22,0.1);color:var(--c8);}
+.b9{background:rgba(249,115,22,0.1);color:var(--c9);}
+.b10{background:rgba(167,139,250,0.1);color:var(--c10);}
+
+@media(max-width:600px){
+  header h1{font-size:1.5rem;}
+  .level-btn{padding:8px 16px;font-size:0.85rem;}
+  .tab-btn{font-size:0.75rem;padding:7px 10px;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>⚛ เครื่องคำนวณฟิสิกส์</h1>
+  <p>ครอบคลุมเนื้อหา ม.4 · ม.5 · ม.6 — Physics Calculator Complete Edition</p>
+</header>
+
+<!-- LEVEL SELECTOR -->
+<div class="level-tabs">
+  <button class="level-btn active" onclick="switchLevel(0)">📐 ม.4 — กลศาสตร์</button>
+  <button class="level-btn" onclick="switchLevel(1)">🌊 ม.5 — คลื่น · ไฟฟ้า</button>
+  <button class="level-btn" onclick="switchLevel(2)">⚡ ม.6 — แม่เหล็ก · อะตอม</button>
+</div>
+
+<!-- ====================== ม.4 ====================== -->
+<div class="level-section active" id="lv0">
+  <div class="tabs" id="tabs0">
+    <button class="tab-btn active" onclick="switchTab(0,0)">⚖️ สมดุลกล</button>
+    <button class="tab-btn" onclick="switchTab(0,1)">⚡ พลังงาน</button>
+    <button class="tab-btn" onclick="switchTab(0,2)">🎯 โมเมนตัม</button>
+    <button class="tab-btn" onclick="switchTab(0,3)">🔄 วงกลม</button>
+    <button class="tab-btn" onclick="switchTab(0,4)">🚀 โพรเจกไทล์</button>
+    <button class="tab-btn" onclick="switchTab(0,5)">📏 จลนศาสตร์</button>
+    <button class="tab-btn" onclick="switchTab(0,6)">⚙️ งานและกำลัง</button>
+  </div>
+
+  <!-- 0: สมดุลกล -->
+  <div class="panel active" data-lv="0" data-idx="0">
+    <div class="calc-card">
+      <h2 class="t1">⚖️ สมดุลกล <span class="badge b1">Mechanical Equilibrium</span></h2>
+      <p class="desc">วัตถุอยู่ในสมดุลเมื่อ ΣF=0 และ ΣM=0 คำนวณแรงปฏิกิริยาที่จุดรองรับของคาน (Simply Supported Beam)</p>
+      <div class="formula-box">ΣF = 0 → R₁ + R₂ = W<br>ΣM_A = 0 → R₂ = W·d/L<br>R₁ = W - R₂</div>
+      <div class="input-grid">
+        <div class="input-group"><label>น้ำหนัก W (N)</label><input type="number" id="eq_W" value="500"></div>
+        <div class="input-group"><label>ความยาวคาน L (m)</label><input type="number" id="eq_L" value="4"></div>
+        <div class="input-group"><label>ระยะจาก A → W (m)</label><input type="number" id="eq_d" value="1.5"></div>
+      </div>
+      <button class="calc-btn" onclick="calcEq()">คำนวณ</button>
+      <div class="result-box" id="eq_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">R₁ (จุด A)</span><span class="value" id="eq_r1">—</span></div>
+        <div class="result-item"><span class="label">R₂ (จุด B)</span><span class="value" id="eq_r2">—</span></div>
+        <div class="result-item"><span class="label">โมเมนต์ที่จุดรับแรง</span><span class="value" id="eq_m">—</span></div>
+      </div>
+      <div class="error-msg" id="eq_err">⚠️ d ต้องน้อยกว่า L และค่าต้องมากกว่า 0</div>
+    </div>
+  </div>
+
+  <!-- 1: พลังงาน -->
+  <div class="panel" data-lv="0" data-idx="1">
+    <div class="calc-card">
+      <h2 class="t2">⚡ การอนุรักษ์พลังงาน <span class="badge b2">Energy Conservation</span></h2>
+      <p class="desc">พลังงานกลรวม = KE + PE = คงที่</p>
+      <div class="formula-box">KE = ½mv²   PE = mgh<br>E_total = KE₀ + PE₀ = KE + PE</div>
+      <div class="input-grid">
+        <div class="input-group"><label>มวล m (kg)</label><input type="number" id="en_m" value="2"></div>
+        <div class="input-group"><label>ความเร็วต้น v₀ (m/s)</label><input type="number" id="en_v0" value="10"></div>
+        <div class="input-group"><label>ความสูงต้น h₀ (m)</label><input type="number" id="en_h0" value="5"></div>
+        <div class="input-group"><label>ความสูงปลาย h (m)</label><input type="number" id="en_h" value="0"></div>
+      </div>
+      <button class="calc-btn" onclick="calcEnergy()">คำนวณ</button>
+      <div class="result-box" id="en_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">KE₀</span><span class="value" id="en_ke0">—</span></div>
+        <div class="result-item"><span class="label">PE₀</span><span class="value" id="en_pe0">—</span></div>
+        <div class="result-item"><span class="label">E_total</span><span class="value" id="en_total">—</span></div>
+        <div class="result-item"><span class="label">PE ปลาย</span><span class="value" id="en_pe">—</span></div>
+        <div class="result-item"><span class="label">ความเร็วปลาย v</span><span class="value" id="en_v">—</span></div>
+      </div>
+      <div class="error-msg" id="en_err">⚠️ PE ปลายมากกว่าพลังงานรวม</div>
+    </div>
+  </div>
+
+  <!-- 2: โมเมนตัม -->
+  <div class="panel" data-lv="0" data-idx="2">
+    <div class="calc-card">
+      <h2 class="t3">🎯 โมเมนตัมและการชน <span class="badge b3">Momentum & Collision</span></h2>
+      <p class="desc">m₁v₁ + m₂v₂ = คงที่ รองรับการชนทั้งแบบยืดหยุ่นและไม่ยืดหยุ่นสมบูรณ์</p>
+      <div class="formula-box">p = mv<br>Elastic: v₁'=((m₁-m₂)v₁+2m₂v₂)/(m₁+m₂)<br>Inelastic: v'=(m₁v₁+m₂v₂)/(m₁+m₂)</div>
+      <div class="input-grid">
+        <div class="input-group"><label>m₁ (kg)</label><input type="number" id="mo_m1" value="3"></div>
+        <div class="input-group"><label>v₁ (m/s)</label><input type="number" id="mo_v1" value="4"></div>
+        <div class="input-group"><label>m₂ (kg)</label><input type="number" id="mo_m2" value="2"></div>
+        <div class="input-group"><label>v₂ (m/s)</label><input type="number" id="mo_v2" value="-1"></div>
+        <div class="input-group"><label>ประเภทการชน</label>
+          <select id="mo_type">
+            <option value="inelastic">ไม่ยืดหยุ่น (Perfectly Inelastic)</option>
+            <option value="elastic">ยืดหยุ่น (Elastic)</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcMomentum()">คำนวณ</button>
+      <div class="result-box" id="mo_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">p ก่อนชน</span><span class="value" id="mo_pb">—</span></div>
+        <div class="result-item"><span class="label">v₁' หลังชน</span><span class="value" id="mo_v1f">—</span></div>
+        <div class="result-item"><span class="label">v₂' หลังชน</span><span class="value" id="mo_v2f">—</span></div>
+        <div class="result-item"><span class="label">ΔKE สูญเสีย</span><span class="value" id="mo_dke">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: วงกลม -->
+  <div class="panel" data-lv="0" data-idx="3">
+    <div class="calc-card">
+      <h2 class="t4">🔄 การเคลื่อนที่วงกลม <span class="badge b4">Circular Motion</span></h2>
+      <p class="desc">ความเร่งสู่ศูนย์กลาง แรงเข้าสู่ศูนย์กลาง ความเร็วเชิงมุม คาบ</p>
+      <div class="formula-box">v = rω = 2πr/T   ω = 2πf<br>a_c = v²/r = rω²   F_c = mv²/r</div>
+      <div class="input-grid">
+        <div class="input-group"><label>มวล m (kg)</label><input type="number" id="ci_m" value="0.5"></div>
+        <div class="input-group"><label>รัศมี r (m)</label><input type="number" id="ci_r" value="1.2"></div>
+        <div class="input-group"><label>กำหนดด้วย</label>
+          <select id="ci_mode" onchange="toggleCiMode()">
+            <option value="v">ความเร็ว v (m/s)</option>
+            <option value="T">คาบ T (s)</option>
+            <option value="f">ความถี่ f (Hz)</option>
+          </select>
+        </div>
+        <div class="input-group"><label id="ci_val_label">ความเร็ว v (m/s)</label><input type="number" id="ci_val" value="3"></div>
+      </div>
+      <button class="calc-btn" onclick="calcCircular()">คำนวณ</button>
+      <div class="result-box" id="ci_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">v (m/s)</span><span class="value" id="ci_vv">—</span></div>
+        <div class="result-item"><span class="label">ω (rad/s)</span><span class="value" id="ci_omega">—</span></div>
+        <div class="result-item"><span class="label">T (s)</span><span class="value" id="ci_T">—</span></div>
+        <div class="result-item"><span class="label">a_c (m/s²)</span><span class="value" id="ci_ac">—</span></div>
+        <div class="result-item"><span class="label">F_c (N)</span><span class="value" id="ci_fc">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: โพรเจกไทล์ -->
+  <div class="panel" data-lv="0" data-idx="4">
+    <div class="calc-card">
+      <h2 class="t5">🚀 โพรเจกไทล์ <span class="badge b5">Projectile Motion</span></h2>
+      <p class="desc">วิถีโค้งพาราโบลา รองรับความสูงเริ่มต้น</p>
+      <div class="formula-box">vₓ=v₀cosθ  vᵧ=v₀sinθ<br>H=vᵧ²/(2g)+h₀  T=(vᵧ+√(vᵧ²+2gh₀))/g  R=vₓ·T</div>
+      <div class="input-grid">
+        <div class="input-group"><label>v₀ (m/s)</label><input type="number" id="pr_v0" value="20"></div>
+        <div class="input-group"><label>θ (องศา)</label><input type="number" id="pr_ang" value="45"></div>
+        <div class="input-group"><label>h₀ (m)</label><input type="number" id="pr_h0" value="0"></div>
+        <div class="input-group"><label>g (m/s²)</label><input type="number" id="pr_g" value="9.81"></div>
+      </div>
+      <button class="calc-btn" onclick="calcProjectile()">คำนวณ</button>
+      <div class="result-box" id="pr_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">vₓ</span><span class="value" id="pr_vx">—</span></div>
+        <div class="result-item"><span class="label">vᵧ</span><span class="value" id="pr_vy">—</span></div>
+        <div class="result-item"><span class="label">ความสูงสูงสุด H</span><span class="value" id="pr_H">—</span></div>
+        <div class="result-item"><span class="label">เวลาทั้งหมด T</span><span class="value" id="pr_T">—</span></div>
+        <div class="result-item"><span class="label">ระยะยิงไกล R</span><span class="value" id="pr_R">—</span></div>
+      </div>
+      <div class="error-msg" id="pr_err">⚠️ กรุณาใส่ข้อมูลถูกต้อง (0–90°)</div>
+    </div>
+  </div>
+
+  <!-- 5: จลนศาสตร์ -->
+  <div class="panel" data-lv="0" data-idx="5">
+    <div class="calc-card">
+      <h2 class="t6">📏 จลนศาสตร์ — การเคลื่อนที่เส้นตรง <span class="badge b6">Kinematics</span></h2>
+      <p class="desc">สมการการเคลื่อนที่สม่ำเสมอ เลือกสิ่งที่ทราบและสิ่งที่ต้องการหา</p>
+      <div class="formula-box">v = u + at<br>s = ut + ½at²<br>v² = u² + 2as<br>s = (u+v)t/2</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความเร็วต้น u (m/s)</label><input type="number" id="kin_u" value="0"></div>
+        <div class="input-group"><label>ความเร็วปลาย v (m/s) *ปล่อยว่างได้</label><input type="number" id="kin_v" placeholder="ว่างถ้าไม่ทราบ"></div>
+        <div class="input-group"><label>ความเร่ง a (m/s²)</label><input type="number" id="kin_a" value="3"></div>
+        <div class="input-group"><label>เวลา t (s) *ปล่อยว่างได้</label><input type="number" id="kin_t" value="5"></div>
+      </div>
+      <button class="calc-btn" onclick="calcKin()">คำนวณ</button>
+      <div class="result-box" id="kin_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ความเร็วปลาย v (m/s)</span><span class="value" id="kin_rv">—</span></div>
+        <div class="result-item"><span class="label">ระยะทาง s (m)</span><span class="value" id="kin_rs">—</span></div>
+        <div class="result-item"><span class="label">เวลา t (s)</span><span class="value" id="kin_rt">—</span></div>
+      </div>
+      <div class="error-msg" id="kin_err">⚠️ ข้อมูลไม่เพียงพอในการคำนวณ</div>
+    </div>
+  </div>
+
+  <!-- 6: งานและกำลัง -->
+  <div class="panel" data-lv="0" data-idx="6">
+    <div class="calc-card">
+      <h2 class="t7">⚙️ งาน กำลัง และประสิทธิภาพ <span class="badge b7">Work & Power</span></h2>
+      <p class="desc">งานเกิดเมื่อมีแรงกระทำและมีการกระจัด กำลังคืออัตราการทำงาน</p>
+      <div class="formula-box">W = F·d·cosθ<br>P = W/t = F·v<br>η = W_out/W_in × 100%</div>
+      <div class="input-grid">
+        <div class="input-group"><label>แรง F (N)</label><input type="number" id="wp_F" value="100"></div>
+        <div class="input-group"><label>การกระจัด d (m)</label><input type="number" id="wp_d" value="10"></div>
+        <div class="input-group"><label>มุม θ (องศา)</label><input type="number" id="wp_ang" value="30"></div>
+        <div class="input-group"><label>เวลา t (s)</label><input type="number" id="wp_t" value="5"></div>
+        <div class="input-group"><label>พลังงานนำเข้า W_in (J) สำหรับ η</label><input type="number" id="wp_win" value="1200"></div>
+      </div>
+      <button class="calc-btn" onclick="calcWork()">คำนวณ</button>
+      <div class="result-box" id="wp_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">งาน W (J)</span><span class="value" id="wp_W">—</span></div>
+        <div class="result-item"><span class="label">กำลัง P (W)</span><span class="value" id="wp_P">—</span></div>
+        <div class="result-item"><span class="label">ประสิทธิภาพ η (%)</span><span class="value" id="wp_eta">—</span></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end lv0 -->
+
+<!-- ====================== ม.5 ====================== -->
+<div class="level-section" id="lv1">
+  <div class="tabs" id="tabs1">
+    <button class="tab-btn active" onclick="switchTab(1,0)">🌊 คลื่นกล</button>
+    <button class="tab-btn" onclick="switchTab(1,1)">🔊 เสียง</button>
+    <button class="tab-btn" onclick="switchTab(1,2)">💡 แสงเชิงรังสี</button>
+    <button class="tab-btn" onclick="switchTab(1,3)">🔬 แสงเชิงคลื่น</button>
+    <button class="tab-btn" onclick="switchTab(1,4)">🔌 ไฟฟ้าสถิต</button>
+    <button class="tab-btn" onclick="switchTab(1,5)">🔋 วงจรไฟฟ้า</button>
+    <button class="tab-btn" onclick="switchTab(1,6)">♨️ ความร้อน</button>
+  </div>
+
+  <!-- คลื่นกล -->
+  <div class="panel active" data-lv="1" data-idx="0">
+    <div class="calc-card">
+      <h2 class="t1">🌊 คลื่นกล <span class="badge b1">Mechanical Wave</span></h2>
+      <p class="desc">ความสัมพันธ์ระหว่างความยาวคลื่น ความถี่ ความเร็ว และคาบของคลื่น</p>
+      <div class="formula-box">v = fλ = λ/T<br>f = 1/T<br>λ = v/f</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความถี่ f (Hz) *ปล่อยว่างถ้าไม่ทราบ</label><input type="number" id="wv_f" value="440"></div>
+        <div class="input-group"><label>ความยาวคลื่น λ (m) *ปล่อยว่าง</label><input type="number" id="wv_lam" placeholder="ว่างถ้าไม่ทราบ"></div>
+        <div class="input-group"><label>ความเร็วคลื่น v (m/s) *ปล่อยว่าง</label><input type="number" id="wv_v" value="343"></div>
+        <div class="input-group"><label>แอมพลิจูด A (m)</label><input type="number" id="wv_A" value="0.01"></div>
+      </div>
+      <button class="calc-btn" onclick="calcWave()">คำนวณ</button>
+      <div class="result-box" id="wv_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ความถี่ f (Hz)</span><span class="value" id="wv_rf">—</span></div>
+        <div class="result-item"><span class="label">ความยาวคลื่น λ (m)</span><span class="value" id="wv_rl">—</span></div>
+        <div class="result-item"><span class="label">ความเร็ว v (m/s)</span><span class="value" id="wv_rv">—</span></div>
+        <div class="result-item"><span class="label">คาบ T (s)</span><span class="value" id="wv_rT">—</span></div>
+        <div class="result-item"><span class="label">ความเข้มพลังงาน I ∝ A² (relative)</span><span class="value" id="wv_rI">—</span></div>
+      </div>
+      <div class="error-msg" id="wv_err">⚠️ ต้องทราบอย่างน้อย 2 ใน 3 (f, λ, v)</div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t7">🎵 คลื่นนิ่ง (Standing Wave) <span class="badge b7">Standing Wave</span></h2>
+      <p class="desc">คลื่นนิ่งในสาย / หลอด — ความถี่ฮาร์โมนิก</p>
+      <div class="formula-box">สาย 2 ปลาย: fₙ = nv/(2L)  n=1,2,3...<br>หลอดเปิด 2 ด้าน: fₙ = nv/(2L)<br>หลอดปิด 1 ด้าน: fₙ = nv/(4L)  n=1,3,5...</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความยาว L (m)</label><input type="number" id="sw_L" value="0.8"></div>
+        <div class="input-group"><label>ความเร็วคลื่น v (m/s)</label><input type="number" id="sw_v" value="340"></div>
+        <div class="input-group"><label>ฮาร์โมนิก n</label><input type="number" id="sw_n" value="1" min="1"></div>
+        <div class="input-group"><label>ประเภท</label>
+          <select id="sw_type">
+            <option value="open2">สาย / หลอดเปิด 2 ด้าน</option>
+            <option value="closed1">หลอดปิด 1 ด้าน (n คี่เท่านั้น)</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcStanding()">คำนวณ</button>
+      <div class="result-box" id="sw_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ความถี่ f_n (Hz)</span><span class="value" id="sw_rf">—</span></div>
+        <div class="result-item"><span class="label">ความยาวคลื่น λ_n (m)</span><span class="value" id="sw_rl">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- เสียง -->
+  <div class="panel" data-lv="1" data-idx="1">
+    <div class="calc-card">
+      <h2 class="t2">🔊 เสียงและระดับความเข้ม <span class="badge b2">Sound & Intensity</span></h2>
+      <p class="desc">ระดับความเข้มเสียง (dB) ปรากฏการณ์ดอปเพลอร์</p>
+      <div class="formula-box">β = 10·log₁₀(I/I₀)  I₀ = 10⁻¹² W/m²<br>I = P/(4πr²)<br>Doppler: f' = f·(v±v_obs)/(v∓v_src)</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความเข้มเสียง I (W/m²)</label><input type="number" id="sn_I" value="0.001" step="any"></div>
+        <div class="input-group"><label>กำลังแหล่งเสียง P (W)</label><input type="number" id="sn_P" value="10"></div>
+        <div class="input-group"><label>ระยะห่าง r (m)</label><input type="number" id="sn_r" value="5"></div>
+      </div>
+      <button class="calc-btn" onclick="calcSound()">คำนวณ</button>
+      <div class="result-box" id="sn_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ระดับความเข้ม β จาก I (dB)</span><span class="value" id="sn_bI">—</span></div>
+        <div class="result-item"><span class="label">ความเข้ม I จาก P,r (W/m²)</span><span class="value" id="sn_Ipr">—</span></div>
+        <div class="result-item"><span class="label">ระดับความเข้ม β จาก P,r (dB)</span><span class="value" id="sn_bPr">—</span></div>
+      </div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t3">🚗 ปรากฏการณ์ดอปเพลอร์ <span class="badge b3">Doppler Effect</span></h2>
+      <p class="desc">+ ผู้สังเกต/แหล่งเสียงเข้าหากัน, − ห่างออก</p>
+      <div class="formula-box">f' = f · (v + v_obs) / (v - v_src)</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความถี่แหล่งกำเนิด f (Hz)</label><input type="number" id="dp_f" value="500"></div>
+        <div class="input-group"><label>ความเร็วเสียง v (m/s)</label><input type="number" id="dp_v" value="340"></div>
+        <div class="input-group"><label>ความเร็วผู้สังเกต v_obs (m/s)</label><input type="number" id="dp_vo" value="0"></div>
+        <div class="input-group"><label>ทิศผู้สังเกต</label>
+          <select id="dp_odir"><option value="1">เข้าหาแหล่งเสียง (+)</option><option value="-1">ห่างจากแหล่งเสียง (−)</option></select>
+        </div>
+        <div class="input-group"><label>ความเร็วแหล่งเสียง v_src (m/s)</label><input type="number" id="dp_vs" value="30"></div>
+        <div class="input-group"><label>ทิศแหล่งเสียง</label>
+          <select id="dp_sdir"><option value="-1">เข้าหาผู้สังเกต (−)</option><option value="1">ห่างจากผู้สังเกต (+)</option></select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcDoppler()">คำนวณ</button>
+      <div class="result-box" id="dp_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ความถี่ที่ได้ยิน f' (Hz)</span><span class="value" id="dp_rf">—</span></div>
+        <div class="result-item"><span class="label">ความยาวคลื่นที่เห็น λ' (m)</span><span class="value" id="dp_rl">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- แสงเชิงรังสี -->
+  <div class="panel" data-lv="1" data-idx="2">
+    <div class="calc-card">
+      <h2 class="t4">💡 แสงเชิงรังสี — การสะท้อนและการหักเห <span class="badge b4">Geometric Optics</span></h2>
+      <p class="desc">กฎสเนลล์ การหักเห มุมวิกฤต และการสะท้อนกลับหมด</p>
+      <div class="formula-box">n₁sinθ₁ = n₂sinθ₂  (Snell's Law)<br>sinθ_c = n₂/n₁  (มุมวิกฤต, n₁ > n₂)<br>n = c/v</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ดัชนีหักเห n₁</label><input type="number" id="op_n1" value="1.5" step="0.01"></div>
+        <div class="input-group"><label>ดัชนีหักเห n₂</label><input type="number" id="op_n2" value="1.0" step="0.01"></div>
+        <div class="input-group"><label>มุมตกกระทบ θ₁ (°)</label><input type="number" id="op_t1" value="30"></div>
+      </div>
+      <button class="calc-btn" onclick="calcOptics()">คำนวณ</button>
+      <div class="result-box" id="op_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">มุมหักเห θ₂ (°)</span><span class="value" id="op_t2">—</span></div>
+        <div class="result-item"><span class="label">มุมวิกฤต θ_c (°)</span><span class="value" id="op_tc">—</span></div>
+        <div class="result-item"><span class="label">ความเร็วแสงในตัวกลาง 1</span><span class="value" id="op_v1">—</span></div>
+        <div class="result-item"><span class="label">ความเร็วแสงในตัวกลาง 2</span><span class="value" id="op_v2">—</span></div>
+      </div>
+      <div class="error-msg" id="op_err">⚠️ เกิด Total Internal Reflection — ไม่มีแสงหักเห</div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t9">🔍 เลนส์และกระจก <span class="badge b9">Lens & Mirror</span></h2>
+      <p class="desc">สมการเลนส์บาง / กระจกทรงกลม</p>
+      <div class="formula-box">1/f = 1/v + 1/u  (u=+วัตถุหน้า)<br>m = -v/u = h'/h<br>P = 1/f (diopter, f หน่วย m)</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความยาวโฟกัส f (cm)</label><input type="number" id="ln_f" value="10"></div>
+        <div class="input-group"><label>ระยะวัตถุ u (cm, +หน้าเลนส์)</label><input type="number" id="ln_u" value="30"></div>
+        <div class="input-group"><label>ประเภท</label>
+          <select id="ln_type">
+            <option value="lens">เลนส์นูน (+f) / เลนส์เว้า (−f)</option>
+            <option value="mirror">กระจกเว้า (+f) / กระจกนูน (−f)</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcLens()">คำนวณ</button>
+      <div class="result-box" id="ln_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ระยะภาพ v (cm)</span><span class="value" id="ln_v">—</span></div>
+        <div class="result-item"><span class="label">กำลังขยาย m (เท่า)</span><span class="value" id="ln_m">—</span></div>
+        <div class="result-item"><span class="label">กำลังเลนส์ P (diopter)</span><span class="value" id="ln_P">—</span></div>
+        <div class="result-item"><span class="label">ลักษณะภาพ</span><span class="value" id="ln_desc">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- แสงเชิงคลื่น -->
+  <div class="panel" data-lv="1" data-idx="3">
+    <div class="calc-card">
+      <h2 class="t5">🔬 แสงเชิงคลื่น — การแทรกสอดและการเลี้ยวเบน <span class="badge b5">Wave Optics</span></h2>
+      <p class="desc">การแทรกสอดจากช่องคู่ Young และการเลี้ยวเบนผ่านช่องเดี่ยว/เกรตติง</p>
+      <div class="formula-box">Young: d·sinθ = mλ  (แถบสว่าง m=0,1,2...)<br>y_m = mλL/d<br>เกรตติง: d·sinθ = mλ  d=1/N</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ระยะห่างช่อง d (mm)</label><input type="number" id="wo_d" value="0.5" step="0.01"></div>
+        <div class="input-group"><label>ระยะจากช่อง → ฉาก L (m)</label><input type="number" id="wo_L" value="1.5"></div>
+        <div class="input-group"><label>ความยาวคลื่น λ (nm)</label><input type="number" id="wo_lam" value="589"></div>
+        <div class="input-group"><label>อันดับแถบ m</label><input type="number" id="wo_m" value="1"></div>
+      </div>
+      <button class="calc-btn" onclick="calcWaveOptics()">คำนวณ</button>
+      <div class="result-box" id="wo_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">มุม θ_m (°)</span><span class="value" id="wo_theta">—</span></div>
+        <div class="result-item"><span class="label">ระยะ y_m บนฉาก (mm)</span><span class="value" id="wo_y">—</span></div>
+        <div class="result-item"><span class="label">ระยะห่างระหว่างแถบ Δy (mm)</span><span class="value" id="wo_dy">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ไฟฟ้าสถิต -->
+  <div class="panel" data-lv="1" data-idx="4">
+    <div class="calc-card">
+      <h2 class="t8">🔌 ไฟฟ้าสถิต <span class="badge b8">Electrostatics</span></h2>
+      <p class="desc">กฎคูลอมบ์ สนามไฟฟ้า ศักย์ไฟฟ้า และพลังงานไฟฟ้าสถิต</p>
+      <div class="formula-box">F = kq₁q₂/r²  k=9×10⁹ N·m²/C²<br>E = kq/r²  V = kq/r<br>U = kq₁q₂/r</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ประจุ q₁ (μC)</label><input type="number" id="es_q1" value="2" step="0.1"></div>
+        <div class="input-group"><label>ประจุ q₂ (μC)</label><input type="number" id="es_q2" value="-3" step="0.1"></div>
+        <div class="input-group"><label>ระยะห่าง r (m)</label><input type="number" id="es_r" value="0.1" step="0.01"></div>
+      </div>
+      <button class="calc-btn" onclick="calcES()">คำนวณ</button>
+      <div class="result-box" id="es_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">แรงคูลอมบ์ F (N)</span><span class="value" id="es_F">—</span></div>
+        <div class="result-item"><span class="label">สนามไฟฟ้า E จาก q₁ (N/C)</span><span class="value" id="es_E1">—</span></div>
+        <div class="result-item"><span class="label">ศักย์ไฟฟ้า V จาก q₁ (V)</span><span class="value" id="es_V1">—</span></div>
+        <div class="result-item"><span class="label">พลังงานศักย์ U (J)</span><span class="value" id="es_U">—</span></div>
+      </div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t10">🏪 ตัวเก็บประจุ <span class="badge b10">Capacitor</span></h2>
+      <p class="desc">ความจุ พลังงาน และการต่อแบบอนุกรม/ขนาน</p>
+      <div class="formula-box">Q = CV  U = ½CV² = Q²/(2C)<br>อนุกรม: 1/C_eq = Σ1/Cᵢ<br>ขนาน: C_eq = ΣCᵢ</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความจุ C (μF)</label><input type="number" id="cap_C" value="10"></div>
+        <div class="input-group"><label>แรงดัน V (V)</label><input type="number" id="cap_V" value="12"></div>
+        <div class="input-group"><label>C₁ (μF) สำหรับต่อกัน</label><input type="number" id="cap_C1" value="4"></div>
+        <div class="input-group"><label>C₂ (μF) สำหรับต่อกัน</label><input type="number" id="cap_C2" value="6"></div>
+      </div>
+      <button class="calc-btn" onclick="calcCap()">คำนวณ</button>
+      <div class="result-box" id="cap_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ประจุสะสม Q (μC)</span><span class="value" id="cap_Q">—</span></div>
+        <div class="result-item"><span class="label">พลังงานสะสม U (J)</span><span class="value" id="cap_U">—</span></div>
+        <div class="result-item"><span class="label">C_eq อนุกรม C₁+C₂ (μF)</span><span class="value" id="cap_Cs">—</span></div>
+        <div class="result-item"><span class="label">C_eq ขนาน C₁+C₂ (μF)</span><span class="value" id="cap_Cp">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- วงจรไฟฟ้า -->
+  <div class="panel" data-lv="1" data-idx="5">
+    <div class="calc-card">
+      <h2 class="t9">🔋 วงจรไฟฟ้ากระแสตรง <span class="badge b9">DC Circuit</span></h2>
+      <p class="desc">กฎโอห์ม ความต้านทานอนุกรม/ขนาน กำลังไฟฟ้า</p>
+      <div class="formula-box">V = IR  P = VI = I²R = V²/R<br>อนุกรม: R_eq = ΣRᵢ<br>ขนาน: 1/R_eq = Σ1/Rᵢ</div>
+      <div class="input-grid">
+        <div class="input-group"><label>แรงดัน V (V)</label><input type="number" id="dc_V" value="12"></div>
+        <div class="input-group"><label>R₁ (Ω)</label><input type="number" id="dc_R1" value="4"></div>
+        <div class="input-group"><label>R₂ (Ω)</label><input type="number" id="dc_R2" value="6"></div>
+        <div class="input-group"><label>R₃ (Ω) (0=ไม่ใช้)</label><input type="number" id="dc_R3" value="0"></div>
+        <div class="input-group"><label>การต่อ</label>
+          <select id="dc_mode">
+            <option value="series">อนุกรม</option>
+            <option value="parallel">ขนาน</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calcDC()">คำนวณ</button>
+      <div class="result-box" id="dc_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">R_eq (Ω)</span><span class="value" id="dc_Req">—</span></div>
+        <div class="result-item"><span class="label">กระแสรวม I (A)</span><span class="value" id="dc_I">—</span></div>
+        <div class="result-item"><span class="label">กำลังไฟฟ้า P (W)</span><span class="value" id="dc_P">—</span></div>
+        <div class="result-item"><span class="label">พลังงาน W ใน 1 ชม. (kWh)</span><span class="value" id="dc_W">—</span></div>
+      </div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t6">🌀 วงจร AC และอิมพีแดนซ์ <span class="badge b6">AC Circuit & Impedance</span></h2>
+      <p class="desc">วงจร RLC กระแสสลับ อิมพีแดนซ์ และความถี่เรโซแนนซ์</p>
+      <div class="formula-box">X_L=2πfL  X_C=1/(2πfC)<br>Z=√(R²+(X_L-X_C)²)<br>f_res=1/(2π√(LC))</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความถี่ f (Hz)</label><input type="number" id="ac_f" value="50"></div>
+        <div class="input-group"><label>R (Ω)</label><input type="number" id="ac_R" value="100"></div>
+        <div class="input-group"><label>L (mH)</label><input type="number" id="ac_L" value="200"></div>
+        <div class="input-group"><label>C (μF)</label><input type="number" id="ac_C" value="100"></div>
+        <div class="input-group"><label>V_rms (V)</label><input type="number" id="ac_V" value="220"></div>
+      </div>
+      <button class="calc-btn" onclick="calcAC()">คำนวณ</button>
+      <div class="result-box" id="ac_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">X_L (Ω)</span><span class="value" id="ac_XL">—</span></div>
+        <div class="result-item"><span class="label">X_C (Ω)</span><span class="value" id="ac_XC">—</span></div>
+        <div class="result-item"><span class="label">Z อิมพีแดนซ์ (Ω)</span><span class="value" id="ac_Z">—</span></div>
+        <div class="result-item"><span class="label">I_rms (A)</span><span class="value" id="ac_I">—</span></div>
+        <div class="result-item"><span class="label">ความถี่เรโซแนนซ์ f_res (Hz)</span><span class="value" id="ac_fres">—</span></div>
+        <div class="result-item"><span class="label">กำลัง P (W)</span><span class="value" id="ac_P">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ความร้อน -->
+  <div class="panel" data-lv="1" data-idx="6">
+    <div class="calc-card">
+      <h2 class="t3">♨️ ความร้อนและอุณหพลศาสตร์ <span class="badge b3">Thermodynamics</span></h2>
+      <p class="desc">ความจุความร้อน การถ่ายเทความร้อน แก๊สอุดมคติ</p>
+      <div class="formula-box">Q = mcΔT  (m=kg, c=J/kg·K)<br>Q_latent = mL<br>PV = nRT  (R=8.314 J/mol·K)</div>
+      <div class="input-grid">
+        <div class="input-group"><label>มวล m (kg)</label><input type="number" id="th_m" value="1"></div>
+        <div class="input-group"><label>ความจุความร้อนจำเพาะ c (J/kg·K)</label><input type="number" id="th_c" value="4186"></div>
+        <div class="input-group"><label>ΔT (°C หรือ K)</label><input type="number" id="th_dt" value="10"></div>
+        <div class="input-group"><label>ความร้อนแฝง L (kJ/kg) *เปลี่ยนสถานะ</label><input type="number" id="th_L" value="334"></div>
+      </div>
+      <button class="calc-btn" onclick="calcThermo()">คำนวณ</button>
+      <div class="result-box" id="th_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ความร้อนรับ/คาย Q (J)</span><span class="value" id="th_Q">—</span></div>
+        <div class="result-item"><span class="label">Q ในหน่วย kJ</span><span class="value" id="th_Qk">—</span></div>
+        <div class="result-item"><span class="label">Q_latent (J) เปลี่ยนสถานะ</span><span class="value" id="th_Ql">—</span></div>
+      </div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t4">💨 แก๊สอุดมคติ <span class="badge b4">Ideal Gas</span></h2>
+      <p class="desc">กฎรวมแก๊สและกฎแก๊สอุดมคติ</p>
+      <div class="formula-box">P₁V₁/T₁ = P₂V₂/T₂<br>PV = nRT  R=8.314 J/(mol·K)<br>T(K) = T(°C) + 273.15</div>
+      <div class="input-grid">
+        <div class="input-group"><label>P₁ (kPa)</label><input type="number" id="gas_P1" value="100"></div>
+        <div class="input-group"><label>V₁ (L)</label><input type="number" id="gas_V1" value="2"></div>
+        <div class="input-group"><label>T₁ (°C)</label><input type="number" id="gas_T1" value="27"></div>
+        <div class="input-group"><label>P₂ (kPa)</label><input type="number" id="gas_P2" value="200"></div>
+        <div class="input-group"><label>T₂ (°C)</label><input type="number" id="gas_T2" value="127"></div>
+      </div>
+      <button class="calc-btn" onclick="calcGas()">คำนวณ</button>
+      <div class="result-box" id="gas_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">V₂ (L)</span><span class="value" id="gas_V2">—</span></div>
+        <div class="result-item"><span class="label">P₁V₁/T₁ (คงที่)</span><span class="value" id="gas_k">—</span></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end lv1 -->
+
+<!-- ====================== ม.6 ====================== -->
+<div class="level-section" id="lv2">
+  <div class="tabs" id="tabs2">
+    <button class="tab-btn active" onclick="switchTab(2,0)">🧲 แม่เหล็กไฟฟ้า</button>
+    <button class="tab-btn" onclick="switchTab(2,1)">📡 คลื่นแม่เหล็กไฟฟ้า</button>
+    <button class="tab-btn" onclick="switchTab(2,2)">⚛ ฟิสิกส์อะตอม</button>
+    <button class="tab-btn" onclick="switchTab(2,3)">☢ กัมมันตภาพรังสี</button>
+    <button class="tab-btn" onclick="switchTab(2,4)">🌌 ฟิสิกส์นิวเคลียร์</button>
+    <button class="tab-btn" onclick="switchTab(2,5)">🚀 สัมพัทธภาพ</button>
+  </div>
+
+  <!-- แม่เหล็กไฟฟ้า -->
+  <div class="panel active" data-lv="2" data-idx="0">
+    <div class="calc-card">
+      <h2 class="t1">🧲 สนามแม่เหล็กและแรงลอเรนซ์ <span class="badge b1">Magnetic Force</span></h2>
+      <p class="desc">แรงที่กระทำต่ออนุภาคมีประจุและตัวนำกระแสไฟฟ้าในสนามแม่เหล็ก</p>
+      <div class="formula-box">F = qvB·sinθ  (อนุภาค)<br>F = BIL·sinθ  (ตัวนำ)<br>r = mv/(qB)  (รัศมีวงกลม)</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ประจุ q (C) หรือหน่วย e</label><input type="number" id="mg_q" value="1.6e-19" step="any"></div>
+        <div class="input-group"><label>ความเร็ว v (m/s)</label><input type="number" id="mg_v" value="1e6" step="any"></div>
+        <div class="input-group"><label>สนามแม่เหล็ก B (T)</label><input type="number" id="mg_B" value="0.5" step="0.01"></div>
+        <div class="input-group"><label>มุม θ (°)</label><input type="number" id="mg_ang" value="90"></div>
+        <div class="input-group"><label>มวล m (kg)</label><input type="number" id="mg_m" value="9.11e-31" step="any"></div>
+      </div>
+      <button class="calc-btn" onclick="calcMag()">คำนวณ</button>
+      <div class="result-box" id="mg_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">แรงลอเรนซ์ F (N)</span><span class="value" id="mg_F">—</span></div>
+        <div class="result-item"><span class="label">รัศมีวงกลม r (m)</span><span class="value" id="mg_r">—</span></div>
+        <div class="result-item"><span class="label">คาบ T (s)</span><span class="value" id="mg_T">—</span></div>
+      </div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t2">⚡ การเหนี่ยวนำแม่เหล็กไฟฟ้า <span class="badge b2">Electromagnetic Induction</span></h2>
+      <p class="desc">กฎฟาราเดย์และหม้อแปลงไฟฟ้า</p>
+      <div class="formula-box">ε = -N·ΔΦ/Δt  Φ = BA·cosθ<br>หม้อแปลง: V₁/V₂ = N₁/N₂ = I₂/I₁<br>η = P_out/P_in × 100%</div>
+      <div class="input-grid">
+        <div class="input-group"><label>จำนวนรอบ N₁ (ปฐมภูมิ)</label><input type="number" id="tr_N1" value="1000"></div>
+        <div class="input-group"><label>จำนวนรอบ N₂ (ทุติยภูมิ)</label><input type="number" id="tr_N2" value="100"></div>
+        <div class="input-group"><label>V₁ (V)</label><input type="number" id="tr_V1" value="220"></div>
+        <div class="input-group"><label>กระแส I₁ (A)</label><input type="number" id="tr_I1" value="0.5"></div>
+        <div class="input-group"><label>ประสิทธิภาพ η (%)</label><input type="number" id="tr_eta" value="95"></div>
+      </div>
+      <button class="calc-btn" onclick="calcTransformer()">คำนวณ</button>
+      <div class="result-box" id="tr_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">V₂ (V)</span><span class="value" id="tr_V2">—</span></div>
+        <div class="result-item"><span class="label">I₂ ทุติยภูมิ (A)</span><span class="value" id="tr_I2">—</span></div>
+        <div class="result-item"><span class="label">กำลังปฐมภูมิ P₁ (W)</span><span class="value" id="tr_P1">—</span></div>
+        <div class="result-item"><span class="label">กำลังทุติยภูมิ P₂ (W)</span><span class="value" id="tr_P2">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- คลื่น EM -->
+  <div class="panel" data-lv="2" data-idx="1">
+    <div class="calc-card">
+      <h2 class="t3">📡 คลื่นแม่เหล็กไฟฟ้า <span class="badge b3">Electromagnetic Waves</span></h2>
+      <p class="desc">สเปกตรัม EM ความสัมพันธ์ระหว่างความถี่ ความยาวคลื่น และพลังงานโฟตอน</p>
+      <div class="formula-box">c = fλ  c = 3×10⁸ m/s<br>E = hf = hc/λ  h=6.626×10⁻³⁴ J·s<br>E(eV) = E(J)/1.6×10⁻¹⁹</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความถี่ f (Hz) *ปล่อยว่างถ้าใส่ λ</label><input type="number" id="em_f" value="6e14" step="any"></div>
+        <div class="input-group"><label>ความยาวคลื่น λ (nm) *ปล่อยว่าง</label><input type="number" id="em_lam" placeholder="ว่างถ้าใส่ f"></div>
+      </div>
+      <button class="calc-btn" onclick="calcEM()">คำนวณ</button>
+      <div class="result-box" id="em_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">ความถี่ f (Hz)</span><span class="value" id="em_rf">—</span></div>
+        <div class="result-item"><span class="label">ความยาวคลื่น λ (nm)</span><span class="value" id="em_rl">—</span></div>
+        <div class="result-item"><span class="label">พลังงานโฟตอน E (J)</span><span class="value" id="em_rE">—</span></div>
+        <div class="result-item"><span class="label">พลังงานโฟตอน E (eV)</span><span class="value" id="em_rEeV">—</span></div>
+        <div class="result-item"><span class="label">ช่วงคลื่น</span><span class="value" id="em_rRange">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ฟิสิกส์อะตอม -->
+  <div class="panel" data-lv="2" data-idx="2">
+    <div class="calc-card">
+      <h2 class="t4">⚛ ฟิสิกส์ควอนตัมและโฟโตอิเล็กทริก <span class="badge b4">Quantum & Photoelectric</span></h2>
+      <p class="desc">ปรากฏการณ์โฟโตอิเล็กทริก พลังงานโฟตอน ฟังก์ชันงาน</p>
+      <div class="formula-box">E_photon = hf = hc/λ<br>KE_max = hf - W  (W=ฟังก์ชันงาน)<br>λ_de Broglie = h/mv  (h=6.626×10⁻³⁴)</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความยาวคลื่นแสง λ (nm)</label><input type="number" id="pe_lam" value="400"></div>
+        <div class="input-group"><label>ฟังก์ชันงาน W (eV)</label><input type="number" id="pe_W" value="2.3" step="0.01"></div>
+        <div class="input-group"><label>มวลอนุภาค m (kg) สำหรับ de Broglie</label><input type="number" id="pe_m" value="9.11e-31" step="any"></div>
+        <div class="input-group"><label>ความเร็วอนุภาค v (m/s)</label><input type="number" id="pe_v" value="1e6" step="any"></div>
+      </div>
+      <button class="calc-btn" onclick="calcPE()">คำนวณ</button>
+      <div class="result-box" id="pe_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">พลังงานโฟตอน E (eV)</span><span class="value" id="pe_E">—</span></div>
+        <div class="result-item"><span class="label">KE_max อิเล็กตรอน (eV)</span><span class="value" id="pe_KE">—</span></div>
+        <div class="result-item"><span class="label">ความยาวคลื่นขีดต่ำ λ_min (nm)</span><span class="value" id="pe_lmin">—</span></div>
+        <div class="result-item"><span class="label">de Broglie λ (pm)</span><span class="value" id="pe_dB">—</span></div>
+      </div>
+      <div class="error-msg" id="pe_err">⚠️ พลังงานโฟตอนน้อยกว่าฟังก์ชันงาน — ไม่เกิดโฟโตอิเล็กทริก</div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t5">🔭 แบบจำลองอะตอมไฮโดรเจนของโบร์ <span class="badge b5">Bohr Model</span></h2>
+      <p class="desc">ระดับพลังงานและความยาวคลื่นสเปกตรัมของไฮโดรเจน</p>
+      <div class="formula-box">E_n = -13.6/n² (eV)<br>1/λ = R_H(1/n₁² - 1/n₂²)  R_H=1.097×10⁷ m⁻¹<br>ΔE = E_n₂ - E_n₁ = hf = hc/λ</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ระดับพลังงานต้น n₁ (ต่ำกว่า)</label><input type="number" id="bh_n1" value="2" min="1"></div>
+        <div class="input-group"><label>ระดับพลังงานปลาย n₂ (สูงกว่า)</label><input type="number" id="bh_n2" value="4" min="2"></div>
+      </div>
+      <button class="calc-btn" onclick="calcBohr()">คำนวณ</button>
+      <div class="result-box" id="bh_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">E_n₁ (eV)</span><span class="value" id="bh_E1">—</span></div>
+        <div class="result-item"><span class="label">E_n₂ (eV)</span><span class="value" id="bh_E2">—</span></div>
+        <div class="result-item"><span class="label">ΔE พลังงานโฟตอน (eV)</span><span class="value" id="bh_dE">—</span></div>
+        <div class="result-item"><span class="label">ความยาวคลื่นที่ปล่อย λ (nm)</span><span class="value" id="bh_lam">—</span></div>
+        <div class="result-item"><span class="label">ซีรีส์สเปกตรัม</span><span class="value" id="bh_series">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- กัมมันตภาพรังสี -->
+  <div class="panel" data-lv="2" data-idx="3">
+    <div class="calc-card">
+      <h2 class="t6">☢ กัมมันตภาพรังสีและการสลาย <span class="badge b6">Radioactive Decay</span></h2>
+      <p class="desc">กฎการสลาย ครึ่งชีวิต และกิจกรรมรังสี</p>
+      <div class="formula-box">N(t) = N₀·e^(-λt) = N₀·(½)^(t/t½)<br>A = λN  λ = ln2/t½<br>t½ = ln2/λ</div>
+      <div class="input-grid">
+        <div class="input-group"><label>จำนวนนิวเคลียสต้น N₀</label><input type="number" id="rd_N0" value="1e12" step="any"></div>
+        <div class="input-group"><label>ครึ่งชีวิต t½ (วัน)</label><input type="number" id="rd_t12" value="5.27"></div>
+        <div class="input-group"><label>เวลา t (วัน)</label><input type="number" id="rd_t" value="10"></div>
+      </div>
+      <button class="calc-btn" onclick="calcDecay()">คำนวณ</button>
+      <div class="result-box" id="rd_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">N(t) นิวเคลียสที่เหลือ</span><span class="value" id="rd_N">—</span></div>
+        <div class="result-item"><span class="label">เปอร์เซ็นต์ที่เหลือ (%)</span><span class="value" id="rd_pct">—</span></div>
+        <div class="result-item"><span class="label">ค่าคงที่การสลาย λ (1/วัน)</span><span class="value" id="rd_lam">—</span></div>
+        <div class="result-item"><span class="label">กิจกรรม A = λN(t) (disint/s)</span><span class="value" id="rd_A">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ฟิสิกส์นิวเคลียร์ -->
+  <div class="panel" data-lv="2" data-idx="4">
+    <div class="calc-card">
+      <h2 class="t7">🌌 ฟิสิกส์นิวเคลียร์ — พลังงานยึดเหนี่ยว <span class="badge b7">Nuclear Physics</span></h2>
+      <p class="desc">พลังงานยึดเหนี่ยว มวลพร่อง และสมการ E=mc²</p>
+      <div class="formula-box">Δm = Zm_p + Nm_n - M_nucleus<br>E_B = Δm·c²  c=3×10⁸ m/s<br>1 u = 931.5 MeV/c²  1 MeV=1.6×10⁻¹³ J</div>
+      <div class="input-grid">
+        <div class="input-group"><label>มวลพร่อง Δm (u)</label><input type="number" id="nu_dm" value="0.03038" step="0.00001"></div>
+        <div class="input-group"><label>จำนวนนิวคลีออน A</label><input type="number" id="nu_A" value="4"></div>
+      </div>
+      <button class="calc-btn" onclick="calcNuclear()">คำนวณ</button>
+      <div class="result-box" id="nu_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">E_B (MeV)</span><span class="value" id="nu_EB">—</span></div>
+        <div class="result-item"><span class="label">E_B (J)</span><span class="value" id="nu_EBJ">—</span></div>
+        <div class="result-item"><span class="label">E_B ต่อนิวคลีออน (MeV/A)</span><span class="value" id="nu_EBA">—</span></div>
+      </div>
+    </div>
+    <div class="calc-card">
+      <h2 class="t9">💥 E = mc² <span class="badge b9">Mass-Energy</span></h2>
+      <p class="desc">การแปลงมวลเป็นพลังงาน</p>
+      <div class="formula-box">E = mc²  c = 2.998×10⁸ m/s</div>
+      <div class="input-grid">
+        <div class="input-group"><label>มวล m (kg)</label><input type="number" id="emc_m" value="1e-3" step="any"></div>
+      </div>
+      <button class="calc-btn" onclick="calcEmc()">คำนวณ</button>
+      <div class="result-box" id="emc_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">พลังงาน E (J)</span><span class="value" id="emc_E">—</span></div>
+        <div class="result-item"><span class="label">พลังงาน E (MeV)</span><span class="value" id="emc_Emev">—</span></div>
+        <div class="result-item"><span class="label">เทียบเท่า TNT (ตัน)</span><span class="value" id="emc_tnt">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- สัมพัทธภาพ -->
+  <div class="panel" data-lv="2" data-idx="5">
+    <div class="calc-card">
+      <h2 class="t10">🚀 ทฤษฎีสัมพัทธภาพพิเศษ <span class="badge b10">Special Relativity</span></h2>
+      <p class="desc">การยืดเวลา การหดความยาว และมวลสัมพัทธภาพ</p>
+      <div class="formula-box">γ = 1/√(1-v²/c²)  (Lorentz factor)<br>t' = γt₀  (time dilation)<br>L' = L₀/γ  (length contraction)<br>m' = γm₀</div>
+      <div class="input-grid">
+        <div class="input-group"><label>ความเร็ว v (เท่าของ c, 0–0.9999)</label><input type="number" id="sr_v" value="0.8" step="0.01" min="0" max="0.9999"></div>
+        <div class="input-group"><label>เวลาผู้สังเกต t₀ (s)</label><input type="number" id="sr_t0" value="1"></div>
+        <div class="input-group"><label>ความยาวอ้างอิง L₀ (m)</label><input type="number" id="sr_L0" value="100"></div>
+        <div class="input-group"><label>มวลอ้างอิง m₀ (kg)</label><input type="number" id="sr_m0" value="1"></div>
+      </div>
+      <button class="calc-btn" onclick="calcSR()">คำนวณ</button>
+      <div class="result-box" id="sr_result">
+        <h3>📊 ผลลัพธ์</h3>
+        <div class="result-item"><span class="label">Lorentz factor γ</span><span class="value" id="sr_gamma">—</span></div>
+        <div class="result-item"><span class="label">เวลาที่ผ่านไปในกรอบเคลื่อนที่ t' (s)</span><span class="value" id="sr_t">—</span></div>
+        <div class="result-item"><span class="label">ความยาวที่หดลง L' (m)</span><span class="value" id="sr_L">—</span></div>
+        <div class="result-item"><span class="label">มวลสัมพัทธภาพ m' (kg)</span><span class="value" id="sr_m">—</span></div>
+        <div class="result-item"><span class="label">พลังงานจลน์ KE (J)</span><span class="value" id="sr_KE">—</span></div>
+      </div>
+      <div class="error-msg" id="sr_err">⚠️ v ต้องน้อยกว่า c (ใส่ค่า 0-0.9999)</div>
+    </div>
+  </div>
+</div><!-- end lv2 -->
+
+</div><!-- container -->
+
+<script>
+const G = 9.81, c = 3e8, h = 6.626e-34, k_e = 9e9, eV = 1.6e-19;
+const fmt = (n,d=4) => {
+  if(Math.abs(n) >= 1e6 || (Math.abs(n) < 1e-3 && n!==0)) return n.toExponential(3);
+  return parseFloat(n.toFixed(d)).toString();
+};
+const fmtU = (n,u,d=4) => fmt(n,d)+' '+u;
+
+function switchLevel(i){
+  document.querySelectorAll('.level-section').forEach((s,j)=>s.classList.toggle('active',i===j));
+  document.querySelectorAll('.level-btn').forEach((b,j)=>b.classList.toggle('active',i===j));
+}
+
+function switchTab(lv,idx){
+  const panels = document.querySelectorAll(`.panel[data-lv="${lv}"]`);
+  const btns = document.querySelectorAll(`#tabs${lv} .tab-btn`);
+  panels.forEach((p,j)=>p.classList.toggle('active',j===idx));
+  btns.forEach((b,j)=>b.classList.toggle('active',j===idx));
+}
+
+function show(id){document.getElementById(id).classList.add('show');}
+function hide(id){document.getElementById(id).classList.remove('show');}
+function showErr(id,s=true){document.getElementById(id).style.display=s?'block':'none';}
+function set(id,v){document.getElementById(id).textContent=v;}
+
+// ม.4
+function calcEq(){
+  const W=+document.getElementById('eq_W').value,L=+document.getElementById('eq_L').value,d=+document.getElementById('eq_d').value;
+  hide('eq_result');showErr('eq_err',false);
+  if(!W||!L||isNaN(d)||d<0||d>L||L<=0){showErr('eq_err');return;}
+  const R1=W*(L-d)/L,R2=W*d/L,M=R1*d;
+  set('eq_r1',fmtU(R1,'N'));set('eq_r2',fmtU(R2,'N'));set('eq_m',fmtU(M,'N·m'));
+  show('eq_result');
+}
+
+function calcEnergy(){
+  const m=+document.getElementById('en_m').value,v0=+document.getElementById('en_v0').value;
+  const h0=+document.getElementById('en_h0').value,hh=+document.getElementById('en_h').value;
+  hide('en_result');showErr('en_err',false);
+  const KE0=0.5*m*v0*v0,PE0=m*G*h0,Et=KE0+PE0,PE=m*G*hh,KE=Et-PE;
+  if(KE<0){showErr('en_err');return;}
+  set('en_ke0',fmtU(KE0,'J'));set('en_pe0',fmtU(PE0,'J'));set('en_total',fmtU(Et,'J'));
+  set('en_pe',fmtU(PE,'J'));set('en_v',fmtU(Math.sqrt(2*KE/m),'m/s'));
+  show('en_result');
+}
+
+function calcMomentum(){
+  const m1=+document.getElementById('mo_m1').value,v1=+document.getElementById('mo_v1').value;
+  const m2=+document.getElementById('mo_m2').value,v2=+document.getElementById('mo_v2').value;
+  const type=document.getElementById('mo_type').value;
+  const pb=m1*v1+m2*v2;
+  let v1f,v2f;
+  if(type==='inelastic'){v1f=v2f=pb/(m1+m2);}
+  else{v1f=((m1-m2)*v1+2*m2*v2)/(m1+m2);v2f=((m2-m1)*v2+2*m1*v1)/(m1+m2);}
+  const dKE=(0.5*m1*v1**2+0.5*m2*v2**2)-(0.5*m1*v1f**2+0.5*m2*v2f**2);
+  set('mo_pb',fmtU(pb,'kg·m/s'));
+  set('mo_v1f',fmtU(v1f,'m/s'));
+  set('mo_v2f',(type==='inelastic'?'(รวม) ':'')+fmtU(v2f,'m/s'));
+  set('mo_dke',fmtU(dKE,'J'));
+  show('mo_result');
+}
+
+function toggleCiMode(){
+  const mode=document.getElementById('ci_mode').value;
+  const labels={v:'ความเร็ว v (m/s)',T:'คาบ T (s)',f:'ความถี่ f (Hz)'};
+  document.getElementById('ci_val_label').textContent=labels[mode];
+}
+
+function calcCircular(){
+  const m=+document.getElementById('ci_m').value,r=+document.getElementById('ci_r').value;
+  const mode=document.getElementById('ci_mode').value,val=+document.getElementById('ci_val').value;
+  let v,T,omega;
+  if(mode==='v'){v=val;omega=v/r;T=2*Math.PI*r/v;}
+  else if(mode==='T'){T=val;omega=2*Math.PI/T;v=omega*r;}
+  else{omega=2*Math.PI*val;T=1/val;v=omega*r;}
+  set('ci_vv',fmtU(v,'m/s'));set('ci_omega',fmtU(omega,'rad/s'));set('ci_T',fmtU(T,'s'));
+  set('ci_ac',fmtU(v*v/r,'m/s²'));set('ci_fc',fmtU(m*v*v/r,'N'));
+  show('ci_result');
+}
+
+function calcProjectile(){
+  const v0=+document.getElementById('pr_v0').value,ang=+document.getElementById('pr_ang').value;
+  const h0=+document.getElementById('pr_h0').value,gv=+document.getElementById('pr_g').value||9.81;
+  hide('pr_result');showErr('pr_err',false);
+  if(!v0||isNaN(ang)||ang<0||ang>90){showErr('pr_err');return;}
+  const rad=ang*Math.PI/180,vx=v0*Math.cos(rad),vy=v0*Math.sin(rad);
+  const H=vy*vy/(2*gv)+h0,disc=vy*vy+2*gv*h0,T=(vy+Math.sqrt(disc))/gv,R=vx*T;
+  set('pr_vx',fmtU(vx,'m/s'));set('pr_vy',fmtU(vy,'m/s'));
+  set('pr_H',fmtU(H,'m'));set('pr_T',fmtU(T,'s'));set('pr_R',fmtU(R,'m'));
+  show('pr_result');
+}
+
+function calcKin(){
+  const u=+document.getElementById('kin_u').value,a=+document.getElementById('kin_a').value;
+  const vEl=document.getElementById('kin_v').value,tEl=document.getElementById('kin_t').value;
+  hide('kin_result');showErr('kin_err',false);
+  let v=vEl===''?null:+vEl,t=tEl===''?null:+tEl,s;
+  if(t!==null){v=u+a*t;s=u*t+0.5*a*t*t;}
+  else if(v!==null){t=(v-u)/a;s=(u+v)*t/2;}
+  else{showErr('kin_err');return;}
+  set('kin_rv',fmtU(v,'m/s'));set('kin_rs',fmtU(s,'m'));set('kin_rt',fmtU(t,'s'));
+  show('kin_result');
+}
+
+function calcWork(){
+  const F=+document.getElementById('wp_F').value,d=+document.getElementById('wp_d').value;
+  const ang=+document.getElementById('wp_ang').value,t=+document.getElementById('wp_t').value;
+  const Win=+document.getElementById('wp_win').value;
+  const W=F*d*Math.cos(ang*Math.PI/180),P=W/t,eta=(W/Win)*100;
+  set('wp_W',fmtU(W,'J'));set('wp_P',fmtU(P,'W'));set('wp_eta',fmtU(eta,'%'));
+  show('wp_result');
+}
+
+// ม.5
+function calcWave(){
+  const f=document.getElementById('wv_f').value===''?null:+document.getElementById('wv_f').value;
+  const lam=document.getElementById('wv_lam').value===''?null:+document.getElementById('wv_lam').value;
+  const v=document.getElementById('wv_v').value===''?null:+document.getElementById('wv_v').value;
+  const A=+document.getElementById('wv_A').value;
+  hide('wv_result');showErr('wv_err',false);
+  let rf,rl,rv;
+  if(f!==null&&v!==null){rf=f;rv=v;rl=v/f;}
+  else if(f!==null&&lam!==null){rf=f;rl=lam/1000;rv=f*rl;rl=lam;}
+  else if(v!==null&&lam!==null){rl=lam;rv=v;rf=v/(lam/1000);}
+  else{showErr('wv_err');return;}
+  const lamM=rl/1000||lam;
+  const rfinal=f!==null?f:(v!==null&&lam!==null?v/(lam/1000):null);
+  // recalc properly
+  let ff=f,ll=lam?lam/1000:null,vv=v;
+  if(ff&&vv&&!ll)ll=vv/ff;
+  else if(ff&&ll&&!vv)vv=ff*ll;
+  else if(vv&&ll&&!ff)ff=vv/ll;
+  set('wv_rf',fmtU(ff,'Hz'));
+  set('wv_rl',fmtU(ll*1000,'mm')+' = '+fmtU(ll,'m'));
+  set('wv_rv',fmtU(vv,'m/s'));
+  set('wv_rT',fmtU(1/ff,'s'));
+  set('wv_rI',fmtU(A*A,'A² (relative)'));
+  show('wv_result');
+}
+
+function calcStanding(){
+  const L=+document.getElementById('sw_L').value,v=+document.getElementById('sw_v').value;
+  let n=+document.getElementById('sw_n').value,type=document.getElementById('sw_type').value;
+  if(type==='closed1'&&n%2===0)n=n+1;
+  const fn=type==='open2'?n*v/(2*L):n*v/(4*L);
+  const lam=v/fn;
+  set('sw_rf',fmtU(fn,'Hz'));set('sw_rl',fmtU(lam,'m'));
+  show('sw_result');
+}
+
+function calcSound(){
+  const I=+document.getElementById('sn_I').value,P=+document.getElementById('sn_P').value,r=+document.getElementById('sn_r').value;
+  const I0=1e-12;
+  const bI=10*Math.log10(I/I0);
+  const Ipr=P/(4*Math.PI*r*r);
+  const bPr=10*Math.log10(Ipr/I0);
+  set('sn_bI',fmtU(bI,'dB'));set('sn_Ipr',fmtU(Ipr,'W/m²'));set('sn_bPr',fmtU(bPr,'dB'));
+  show('sn_result');
+}
+
+function calcDoppler(){
+  const f=+document.getElementById('dp_f').value,v=+document.getElementById('dp_v').value;
+  const vo=+document.getElementById('dp_vo').value,odir=+document.getElementById('dp_odir').value;
+  const vs=+document.getElementById('dp_vs').value,sdir=+document.getElementById('dp_sdir').value;
+  const fp=f*(v+odir*vo)/(v+sdir*vs);
+  set('dp_rf',fmtU(fp,'Hz'));set('dp_rl',fmtU(v/fp,'m'));
+  show('dp_result');
+}
+
+function calcOptics(){
+  const n1=+document.getElementById('op_n1').value,n2=+document.getElementById('op_n2').value;
+  const t1=+document.getElementById('op_t1').value;
+  hide('op_result');showErr('op_err',false);
+  const sin2=n1*Math.sin(t1*Math.PI/180)/n2;
+  const tc=n1>n2?Math.asin(n2/n1)*180/Math.PI:null;
+  if(sin2>1){showErr('op_err');return;}
+  const t2=Math.asin(sin2)*180/Math.PI;
+  set('op_t2',fmtU(t2,'°'));
+  set('op_tc',tc?fmtU(tc,'°'):'N/A (n₁<n₂)');
+  set('op_v1',fmtU(c/n1,'m/s'));set('op_v2',fmtU(c/n2,'m/s'));
+  show('op_result');
+}
+
+function calcLens(){
+  const f=+document.getElementById('ln_f').value,u=+document.getElementById('ln_u').value;
+  const v=1/(1/f-1/u);
+  const m=-v/u;
+  const P=1/(f/100);
+  let desc='';
+  if(v>0)desc='ภาพจริง, '+( m<0?'หัวกลับ':'หัวตั้ง');
+  else desc='ภาพเสมือน, '+( m>0?'หัวตั้ง':'หัวกลับ');
+  desc+=`  |m|=${Math.abs(m).toFixed(2)}×`;
+  set('ln_v',fmtU(v,'cm'));set('ln_m',fmtU(m,'เท่า'));set('ln_P',fmtU(P,'D'));set('ln_desc',desc);
+  show('ln_result');
+}
+
+function calcWaveOptics(){
+  const d=+document.getElementById('wo_d').value/1000,L=+document.getElementById('wo_L').value;
+  const lam=+document.getElementById('wo_lam').value*1e-9,m=+document.getElementById('wo_m').value;
+  const sinT=m*lam/d,theta=Math.asin(sinT)*180/Math.PI;
+  const y=m*lam*L/d*1000;
+  const dy=lam*L/d*1000;
+  set('wo_theta',fmtU(theta,'°'));set('wo_y',fmtU(y,'mm'));set('wo_dy',fmtU(dy,'mm'));
+  show('wo_result');
+}
+
+function calcES(){
+  const q1=+document.getElementById('es_q1').value*1e-6,q2=+document.getElementById('es_q2').value*1e-6;
+  const r=+document.getElementById('es_r').value;
+  const F=k_e*Math.abs(q1*q2)/(r*r);
+  const E1=k_e*Math.abs(q1)/(r*r);
+  const V1=k_e*q1/r;
+  const U=k_e*q1*q2/r;
+  set('es_F',fmtU(F,'N')+' ('+(q1*q2<0?'ดึงดูด':'ผลัก')+')');
+  set('es_E1',fmtU(E1,'N/C'));set('es_V1',fmtU(V1,'V'));set('es_U',fmtU(U,'J'));
+  show('es_result');
+}
+
+function calcCap(){
+  const C=+document.getElementById('cap_C').value,V=+document.getElementById('cap_V').value;
+  const C1=+document.getElementById('cap_C1').value,C2=+document.getElementById('cap_C2').value;
+  const Q=C*V,U=0.5*C*V*V*1e-6;
+  const Cs=1/(1/C1+1/C2),Cp=C1+C2;
+  set('cap_Q',fmtU(Q,'μC'));set('cap_U',fmtU(U,'J'));
+  set('cap_Cs',fmtU(Cs,'μF'));set('cap_Cp',fmtU(Cp,'μF'));
+  show('cap_result');
+}
+
+function calcDC(){
+  const V=+document.getElementById('dc_V').value;
+  const R1=+document.getElementById('dc_R1').value,R2=+document.getElementById('dc_R2').value;
+  const R3v=+document.getElementById('dc_R3').value,mode=document.getElementById('dc_mode').value;
+  const Rs=[R1,R2,...(R3v>0?[R3v]:[])];
+  let Req;
+  if(mode==='series')Req=Rs.reduce((a,b)=>a+b,0);
+  else Req=1/Rs.reduce((a,b)=>a+1/b,0);
+  const I=V/Req,P=V*I,W=P*1/1000;
+  set('dc_Req',fmtU(Req,'Ω'));set('dc_I',fmtU(I,'A'));set('dc_P',fmtU(P,'W'));set('dc_W',fmtU(W,'kWh'));
+  show('dc_result');
+}
+
+function calcAC(){
+  const f=+document.getElementById('ac_f').value,R=+document.getElementById('ac_R').value;
+  const L=+document.getElementById('ac_L').value/1000,C=+document.getElementById('ac_C').value*1e-6;
+  const V=+document.getElementById('ac_V').value;
+  const XL=2*Math.PI*f*L,XC=1/(2*Math.PI*f*C);
+  const Z=Math.sqrt(R*R+(XL-XC)**2),I=V/Z;
+  const fres=1/(2*Math.PI*Math.sqrt(L*C)),P=I*I*R;
+  set('ac_XL',fmtU(XL,'Ω'));set('ac_XC',fmtU(XC,'Ω'));set('ac_Z',fmtU(Z,'Ω'));
+  set('ac_I',fmtU(I,'A'));set('ac_fres',fmtU(fres,'Hz'));set('ac_P',fmtU(P,'W'));
+  show('ac_result');
+}
+
+function calcThermo(){
+  const m=+document.getElementById('th_m').value,cv=+document.getElementById('th_c').value;
+  const dt=+document.getElementById('th_dt').value,L=+document.getElementById('th_L').value*1000;
+  const Q=m*cv*dt,Ql=m*L;
+  set('th_Q',fmtU(Q,'J'));set('th_Qk',fmtU(Q/1000,'kJ'));set('th_Ql',fmtU(Ql,'J'));
+  show('th_result');
+}
+
+function calcGas(){
+  const P1=+document.getElementById('gas_P1').value,V1=+document.getElementById('gas_V1').value;
+  const T1=+document.getElementById('gas_T1').value+273.15,P2=+document.getElementById('gas_P2').value;
+  const T2=+document.getElementById('gas_T2').value+273.15;
+  const k=P1*V1/T1,V2=k*T2/P2;
+  set('gas_V2',fmtU(V2,'L'));set('gas_k',fmtU(k,'kPa·L/K'));
+  show('gas_result');
+}
+
+// ม.6
+function calcMag(){
+  const q=+document.getElementById('mg_q').value,v=+document.getElementById('mg_v').value;
+  const B=+document.getElementById('mg_B').value,ang=+document.getElementById('mg_ang').value;
+  const m=+document.getElementById('mg_m').value;
+  const F=Math.abs(q)*v*B*Math.sin(ang*Math.PI/180);
+  const r=m*v/(Math.abs(q)*B),T=2*Math.PI*m/(Math.abs(q)*B);
+  set('mg_F',fmtU(F,'N'));set('mg_r',fmtU(r,'m'));set('mg_T',fmtU(T,'s'));
+  show('mg_result');
+}
+
+function calcTransformer(){
+  const N1=+document.getElementById('tr_N1').value,N2=+document.getElementById('tr_N2').value;
+  const V1=+document.getElementById('tr_V1').value,I1=+document.getElementById('tr_I1').value;
+  const eta=+document.getElementById('tr_eta').value/100;
+  const V2=V1*N2/N1,P1=V1*I1,P2=P1*eta,I2=P2/V2;
+  set('tr_V2',fmtU(V2,'V'));set('tr_I2',fmtU(I2,'A'));set('tr_P1',fmtU(P1,'W'));set('tr_P2',fmtU(P2,'W'));
+  show('tr_result');
+}
+
+function calcEM(){
+  const fv=document.getElementById('em_f').value===''?null:+document.getElementById('em_f').value;
+  const lv=document.getElementById('em_lam').value===''?null:+document.getElementById('em_lam').value;
+  let ff=fv,ll=lv?lv*1e-9:null;
+  if(ff&&!ll)ll=c/ff;
+  else if(ll&&!ff)ff=c/ll;
+  const E=h*ff,EeV=E/eV;
+  const nm=ll*1e9;
+  let range='';
+  if(nm<0.001)range='รังสีแกมมา';
+  else if(nm<10)range='รังสีเอกซ์';
+  else if(nm<400)range='อัลตราไวโอเลต';
+  else if(nm<700)range='แสงที่มองเห็น';
+  else if(nm<1e6)range='อินฟราเรด';
+  else if(nm<0.1*1e9)range='ไมโครเวฟ';
+  else range='คลื่นวิทยุ';
+  set('em_rf',fmtU(ff,'Hz'));set('em_rl',fmtU(nm,'nm'));set('em_rE',fmtU(E,'J'));set('em_rEeV',fmtU(EeV,'eV'));set('em_rRange',range);
+  show('em_result');
+}
+
+function calcPE(){
+  const lam=+document.getElementById('pe_lam').value*1e-9,W=+document.getElementById('pe_W').value;
+  const m=+document.getElementById('pe_m').value,v=+document.getElementById('pe_v').value;
+  const Ephoton=h*c/lam/eV;
+  const KE=Ephoton-W;
+  const lmin=h*c/(W*eV)*1e9;
+  const dB=h/(m*v)*1e12;
+  hide('pe_result');showErr('pe_err',false);
+  if(KE<0){showErr('pe_err');set('pe_E',fmtU(Ephoton,'eV'));show('pe_result');return;}
+  set('pe_E',fmtU(Ephoton,'eV'));set('pe_KE',fmtU(KE,'eV'));set('pe_lmin',fmtU(lmin,'nm'));set('pe_dB',fmtU(dB,'pm'));
+  show('pe_result');
+}
+
+function calcBohr(){
+  const n1=+document.getElementById('bh_n1').value,n2=+document.getElementById('bh_n2').value;
+  const E1=-13.6/n1**2,E2=-13.6/n2**2,dE=Math.abs(E2-E1);
+  const lam=h*c/(dE*eV)*1e9;
+  const series=n1===1?'Lyman (UV)':n1===2?'Balmer (มองเห็น/UV)':n1===3?'Paschen (IR)':'Brackett/Pfund (IR)';
+  set('bh_E1',fmtU(E1,'eV'));set('bh_E2',fmtU(E2,'eV'));set('bh_dE',fmtU(dE,'eV'));
+  set('bh_lam',fmtU(lam,'nm'));set('bh_series',series);
+  show('bh_result');
+}
+
+function calcDecay(){
+  const N0=+document.getElementById('rd_N0').value,t12=+document.getElementById('rd_t12').value;
+  const t=+document.getElementById('rd_t').value;
+  const lam=Math.log(2)/t12,Nt=N0*Math.exp(-lam*t);
+  const pct=(Nt/N0)*100,A=lam*Nt/86400;
+  set('rd_N',fmtU(Nt,'นิวเคลียส'));set('rd_pct',fmtU(pct,'%'));
+  set('rd_lam',fmtU(lam,'1/วัน'));set('rd_A',fmtU(A,'dis/s'));
+  show('rd_result');
+}
+
+function calcNuclear(){
+  const dm=+document.getElementById('nu_dm').value,A=+document.getElementById('nu_A').value;
+  const EB=dm*931.5,EBJ=EB*1.6e-13,EBA=EB/A;
+  set('nu_EB',fmtU(EB,'MeV'));set('nu_EBJ',fmtU(EBJ,'J'));set('nu_EBA',fmtU(EBA,'MeV/A'));
+  show('nu_result');
+}
+
+function calcEmc(){
+  const m=+document.getElementById('emc_m').value;
+  const E=m*c*c,Emev=E/1.6e-13,tnt=E/4.184e9;
+  set('emc_E',fmtU(E,'J'));set('emc_Emev',fmtU(Emev,'MeV'));set('emc_tnt',fmtU(tnt,'ตัน TNT'));
+  show('emc_result');
+}
+
+function calcSR(){
+  const beta=+document.getElementById('sr_v').value,t0=+document.getElementById('sr_t0').value;
+  const L0=+document.getElementById('sr_L0').value,m0=+document.getElementById('sr_m0').value;
+  hide('sr_result');showErr('sr_err',false);
+  if(beta>=1||beta<0){showErr('sr_err');return;}
+  const gamma=1/Math.sqrt(1-beta*beta),tp=gamma*t0,Lp=L0/gamma,mp=gamma*m0;
+  const KE=(gamma-1)*m0*c*c;
+  set('sr_gamma',fmtU(gamma,''));set('sr_t',fmtU(tp,'s'));set('sr_L',fmtU(Lp,'m'));
+  set('sr_m',fmtU(mp,'kg'));set('sr_KE',fmtU(KE,'J'));
+  show('sr_result');
+}
+</script>
+</body>
+</html>
